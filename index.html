@@ -27,10 +27,11 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
+           align-items: flex-start; /* 改成從上方開始排列 */
             min-height: 100vh;
             margin: 0;
-            padding: 20px 20px 60px 20px;
+            padding: 25px 20px 90px 20px; /* 上方留 25px，下方特別保留 90px 給冰原舞台 */
+            box-sizing: border-box; /* 確保 padding 不會溢出螢幕 */
             overflow: hidden;
             position: relative;
             transition: background-color 1.5s ease;
