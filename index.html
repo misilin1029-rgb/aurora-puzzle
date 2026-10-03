@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>極光雪夜與冬日童話：挑戰一解謎</title>
+    <style>
+        :root {
+            --bg-color: #F4F1EA;
+            --card-bg: #FFFFFF;
+            --text-main: #4A453B;
+            --accent-green: #5C765D;
+            --accent-glow: #8FA88F;
+            --border-color: #E2DDD5;
+            --fox-orange: #E07A5F;
+            --tonttu-red: #D9534F;
+            --tonttu-gray: #E0E0E0;
+            --rock-gray: #5A5E65;
+            --rock-dark: #3A3E45;
+            --snow-white: #FFFFFF;
+            --ice-blue: #C2D6E8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 1.5s ease;
+        }
+
+        /* 通關後的夜空與極光背景特效層 */
+        .night-aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 0%, #112244 0%, #060b18 60%, #020408 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 1.5s ease;
+        }
+
+        body.aurora-night .night-aurora-bg {
+            opacity: 1;
+        }
+
+        /* 垂直光柱極光特效 */
+        .night-aurora-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -20%;
+            width: 140%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 15%, rgba(57, 255, 186, 0.35) 30%, rgba(0, 245, 212, 0.5) 45%, rgba(57, 255, 186, 0.4) 60%, transparent 75%),
+                linear-gradient(180deg, rgba(0, 180, 216, 0.4) 0%, transparent 80%),
+                radial-gradient(circle at 85% 70%, rgba(247, 37, 133, 0.25) 0%, transparent 50%),
+                linear-gradient(0deg, rgba(46, 196, 182, 0.2) 0%, transparent 50%);
+            animation: nightAuroraFlow 7s ease-in-out infinite alternate;
+        }
+
+        .night-aurora-bg::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 0;
+            width: 100%;
+            height: 140%;
+            background-image: 
+                radial-gradient(white 1px, transparent 1px),
+                radial-gradient(white 1.5px, transparent 1.5px);
+            background-size: 120px 120px, 180px 180px;
+            background-position: 0 0, 40px 60px;
+            opacity: 0.6;
+            animation: auroraWaviness 10s ease-in-out infinite;
+        }
+
+        @keyframes nightAuroraFlow {
+            0% { transform: scaleX(1) translateY(0); opacity: 0.85; }
+            50% { transform: scaleX(1.08) translateY(-15px); opacity: 1; }
+            100% { transform: scaleX(0.95) translateY(10px); opacity: 0.9; }
+        }
+
+        @keyframes auroraWaviness {
+            0% { transform: skewX(0deg); }
+            50% { transform: skewX(-3deg) scaleY(1.05); }
+            100% { transform: skewX(0deg); }
+        }
+
+        /* 下雪特效層 */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10px) translateX(0); }
+            50% { transform: translateY(50vh) translateX(20px); }
+            100% { transform: translateY(105vh) translateX(-20px); }
+        }
+
+        /* 主卡片對話框 */
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(74, 69, 59, 0.05);
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: var(--accent-green);
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #7A7265;
+            margin-bottom: 25px;
+        }
+
+        .puzzle-box {
+            margin-bottom: 25px;
+        }
+
+        .hint-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"] {
+            width: 85%;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 2px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            background-color: #FAFAF7;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-green);
+            background-color: #FFFFFF;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 93%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            background-color: var(--accent-green);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4A5F4B;
+        }
+
+        /* 通關成功畫面 */
+        #success-screen {
+            display: none;
+        }
+
+        .aurora-badge {
+            background: linear-gradient(135deg, #E2ECE1 0%, #D4E2D4 100%);
+            border: 2px dashed var(--accent-green);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-msg {
+            color: #C06355;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* ---------------------------------
+           Tonttu 小精靈裝飾與動態效果
+           --------------------------------- */
+        .tonttu-decorator {
+            position: absolute;
+            top: -42px;
+            width: 55px;
+            height: 55px;
+            z-index: 15;
+            display: none; /* 預設隱藏 */
+        }
+
+        /* 左側：趴在框框上，加入上下呼吸與微微搖晃動畫 */
+        .tonttu-left {
+            left: 25px;
+            transform-origin: bottom center;
+            animation: tonttuLeftRock 3s ease-in-out infinite;
+        }
+
+        /* 右側：坐在框框上，加入上下起伏與好奇張望動畫 */
+        .tonttu-right {
+            right: 25px;
+            transform-origin: bottom center;
+            animation: tonttuRightBounce 2.5s ease-in-out infinite;
+        }
+
+        @keyframes tonttuLeftRock {
+            0%, 100% { transform: translateY(0) rotate(-12deg); }
+            50% { transform: translateY(-4px) rotate(-6deg); }
+        }
+
+        @keyframes tonttuRightBounce {
+            0%, 100% { transform: translateY(0) rotate(8deg); }
+            50% { transform: translateY(-6px) rotate(12deg); }
+        }
+
+        /* 滿版遊戲舞台：橫跨整個螢幕寬度 */
+        .game-stage {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 90px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* 結冰平原平台樣式 */
+        .ice-platform {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(180deg, var(--rock-gray) 0%, var(--rock-dark) 100%);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 -4px 15px rgba(74, 69, 59, 0.15);
+            overflow: visible;
+            height: 52px;
+        }
+
+        .ice-platform::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -2px;
+            right: -2px;
+            height: 18px;
+            background-color: var(--snow-white);
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+
+        .ice-platform::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            width: 90%;
+            height: 12px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 18px,
+                var(--ice-blue) 18px,
+                var(--ice-blue) 22px
+            );
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 90% 50%, 85% 100%, 75% 40%, 65% 100%, 55% 60%, 45% 100%, 35% 40%, 25% 100%, 15% 50%, 5% 100%);
+            opacity: 0.9;
+        }
+
+        .platform-1 { left: 2%; width: 28%; }
+        .platform-2 { left: 32%; width: 24%; height: 46px; bottom: 4px; } 
+        .platform-3 { left: 58%; width: 26%; }
+        .platform-4 { left: 86%; width: 14%; height: 48px; bottom: 2px; }
+
+        /* 火狐狸本體 */
+        .running-fox-container {
+            position: absolute;
+            bottom: 34px; 
+            left: 50px;
+            width: 80px;
+            height: 50px;
+            z-index: 6;
+            transition: left 5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s ease;
+        }
+
+        .running-fox-container.jumping {
+            animation: foxJump 0.5s ease-in-out;
+        }
+
+        @keyframes foxJump {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-60px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 通關後的夜空極光背景層 -->
+    <div class="night-aurora-bg"></div>
+
+    <!-- 下雪特效層 -->
+    <div class="snowflakes" id="snowflakes"></div>
+
+    <!-- 滿版遊戲舞台：多個結冰平原與活躍的火狐狸 -->
+    <div class="game-stage">
+        <div class="ice-platform platform-1"></div>
+        <div class="ice-platform platform-2"></div>
+        <div class="ice-platform platform-3"></div>
+        <div class="ice-platform platform-4"></div>
+
+        <div class="running-fox-container" id="fox">
+            <svg viewBox="0 0 100 60" width="100%" height="100%" id="fox-svg">
+                <!-- 大尾巴 -->
+                <path d="M20,35 Q5,25 15,10 Q25,0 35,20 Z" fill="#FFFFFF" opacity="0.95"/>
+                <path d="M18,32 Q8,22 16,12 Q24,4 32,22 Z" fill="var(--fox-orange)" opacity="0.4"/>
+                <!-- 身體 -->
+                <ellipse cx="45" cy="35" rx="18" ry="12" fill="var(--fox-orange)"/>
+                <ellipse cx="45" cy="38" rx="12" ry="7" fill="#FFF" opacity="0.3"/>
+                <!-- 頭部 -->
+                <circle cx="65" cy="28" r="11" fill="var(--fox-orange)"/>
+                <!-- 耳朵 -->
+                <polygon points="58,18 63,5 68,18" fill="var(--fox-orange)"/>
+                <polygon points="68,18 73,7 77,20" fill="var(--fox-orange)"/>
+                <polygon points="60,16 63,9 66,16" fill="#FFF" opacity="0.6"/>
+                <!-- 尖嘴巴與白臉頰 -->
+                <polygon points="65,28 78,32 68,36" fill="var(--fox-orange)"/>
+                <polygon points="72,30 78,32 72,35" fill="#FFFFFF"/>
+                <!-- 眼睛 -->
+                <circle cx="67" cy="26" r="1.5" fill="#2C2A29"/>
+                <!-- 纖細奔跑小腳 -->
+                <rect x="35" y="44" width="3" height="10" rx="1.5" fill="var(--fox-orange)"/>
+                <rect x="53" y="44" width="3" height="10" rx="1.5" fill="var(--fox-orange)"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
+        <!-- 左側 Tonttu（趴在框框上，帶有呼吸與搖晃動畫） -->
+        <div class="tonttu-decorator tonttu-left" id="tonttu-left">
+            <svg viewBox="0 0 60 60" width="100%" height="100%">
+                <path d="M30,10 L10,35 L45,25 Z" fill="var(--tonttu-red)"/>
+                <circle cx="8" cy="37" r="4" fill="#FFF"/>
+                <path d="M18,18 Q30,2 42,18 Z" fill="var(--tonttu-red)"/>
+                <ellipse cx="30" cy="38" rx="16" ry="14" fill="var(--tonttu-red)"/>
+                <path d="M20,32 Q30,50 40,32 Z" fill="#FFFFFF"/>
+                <circle cx="30" cy="32" r="3" fill="#FAD1B5"/>
+            </svg>
+        </div>
+
+        <!-- 右側 Tonttu（坐在框框上，帶有上下起伏與好奇轉頭動畫） -->
+        <div class="tonttu-decorator tonttu-right" id="tonttu-right">
+            <svg viewBox="0 0 60 60" width="100%" height="100%">
+                <path d="M30,2 Q45,0 40,25 Z" fill="var(--tonttu-red)"/>
+                <circle cx="42" cy="23" r="4" fill="#FFF"/>
+                <path d="M18,16 Q30,4 42,16 Z" fill="var(--tonttu-red)"/>
+                <ellipse cx="30" cy="36" rx="14" ry="16" fill="var(--tonttu-red)"/>
+                <path d="M21,30 Q30,46 39,30 Z" fill="#FFFFFF"/>
+                <circle cx="30" cy="30" r="3" fill="#FAD1B5"/>
+                <circle cx="26" cy="25" r="1" fill="#333"/>
+                <circle cx="34" cy="25" r="1" fill="#333"/>
+            </svg>
+        </div>
+
+        <!-- 答題介面 -->
+        <div id="puzzle-screen">
+            <h1>✨ 尋找極光密碼</h1>
+            <p class="subtitle">在展場海報中尋找提示，輸入正確的芬蘭神話單字！</p>
+            
+            <div class="puzzle-box">
+                <div class="hint-text">R _ V _ _ T _ L _ _</div>
+                <input type="text" id="answer-input" placeholder="請輸入完整英文單字" autocomplete="off">
+                <div id="error-message" class="error-msg">密碼不正確，再仔細找找海報線索喔！</div>
+            </div>
+
+            <button onclick="checkAnswer()">確認送出</button>
+        </div>
+
+        <!-- 通關成功畫面 -->
+        <div id="success-screen">
+            <h1>🎉 恭喜通關！</h1>
+            <p class="subtitle">You've successfully solved the aurora puzzle!</p>
+            
+            <div class="aurora-badge">
+                <h2>🌌 獲得極光通關憑證</h2>
+                <p style="font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                    請向國際處櫃檯出示此畫面<br>即可兌換您的暖心好禮！
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 動態生成浪漫雪花特效
+        const snowContainer = document.getElementById('snowflakes');
+        const snowflakeCount = 35;
+
+        for (let i = 0; i < snowflakeCount; i++) {
+            const flake = document.createElement('div');
+            flake.classList.add('snowflake');
+            
+            const size = Math.random() * 6 + 4 + 'px';
+            flake.style.width = size;
+            flake.style.height = size;
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = Math.random() * 5 + 4 + 's';
+            flake.style.animationDelay = Math.random() * 5 + 's';
+            flake.style.opacity = Math.random() * 0.6 + 0.3;
+            
+            snowContainer.appendChild(flake);
+        }
+
+        // 火狐狸全螢幕活動邏輯
+        const fox = document.getElementById('fox');
+        const svg = document.getElementById('fox-svg');
+        let currentLeft = 50;
+        
+        function getMaxWidth() {
+            return window.innerWidth - 100;
+        }
+
+        function moveFox() {
+            const maxLeft = getMaxWidth();
+            const minLeft = 20;
+            const action = Math.random();
+            
+            if (action < 0.08) {
+                setTimeout(moveFox, 500);
+                return;
+            }
+
+            const targetLeft = Math.floor(Math.random() * (maxLeft - minLeft)) + minLeft;
+            
+            if (targetLeft > currentLeft) {
+                svg.style.transform = "scaleX(1)";
+            } else {
+                svg.style.transform = "scaleX(-1)";
+            }
+
+            currentLeft = targetLeft;
+            fox.style.left = currentLeft + 'px';
+
+            if (Math.random() > 0.2) {
+                setTimeout(() => {
+                    fox.classList.add('jumping');
+                    setTimeout(() => {
+                        fox.classList.remove('jumping');
+                    }, 500);
+                }, 350);
+            }
+
+            const nextInterval = Math.floor(Math.random() * 600) + 800;
+            setTimeout(moveFox, nextInterval);
+        }
+
+        setTimeout(moveFox, 800);
+
+        // 答題與通關切換
+        function checkAnswer() {
+            const inputVal = document.getElementById('answer-input').value.trim().toUpperCase();
+            const errorMsg = document.getElementById('error-message');
+            
+            if (inputVal === 'REVONTULET') {
+                document.getElementById('puzzle-screen').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+                
+                // 啟動極光夜空背景
+                document.body.classList.add('aurora-night');
+                
+                // 顯示左右兩隻小精靈，並會自動開始動態搖晃與起伏！
+                document.getElementById('tonttu-left').style.display = 'block';
+                document.getElementById('tonttu-right').style.display = 'block';
+            } else {
+                errorMsg.style.display = 'block';
+                const inputField = document.getElementById('answer-input');
+                inputField.style.borderColor = '#C06355';
+                setTimeout(() => {
+                    inputField.style.borderColor = 'var(--border-color)';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
